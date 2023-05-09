@@ -8,11 +8,23 @@ library(shiny)
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Old Faithful Geyser Data"),
+    titlePanel("Decidualisation Timecourse"),
 
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
+            
+            # Choose gene name
+            textInput("genename", label = h3("Gene Name"), value = "Enter gene name..."),
+            
+            hr(),
+            fluidRow(column(3, verbatimTextOutput("value"))),
+            
+            # select Biopsies
+            checkboxGroupInput(inputId="which", label="Select:", 
+                               choices = c("Choice 1"="Choice1","Choice 2"="Choice2","Choice 3"="Choice3"),
+                               selected = c("Choice1","Choice2","Choice3")),
+            hr(),
             sliderInput("bins",
                         "Number of bins:",
                         min = 1,
@@ -22,13 +34,16 @@ ui <- fluidPage(
 
         # Show a plot of the generated distribution
         mainPanel(
-           plotOutput("distPlot")
+            h3(textOutput("sampleChoice", container = span)),
+            plotOutput("distPlot")
         )
     )
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+    
+    output$sampleChoice <- renderPrint(print(input$which))
 
     output$distPlot <- renderPlot({
         # generate bins based on input$bins from ui.R
