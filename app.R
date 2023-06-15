@@ -10,18 +10,18 @@ ui <- fluidPage(
     # Application title
     titlePanel("Decidualisation Timecourse"),
 
-    # Sidebar with a slider input for number of bins 
+    # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
-            
+
             # Choose gene name
             textInput("genename", label = h3("Gene Name"), value = "Enter gene name..."),
-            
+
             hr(),
             fluidRow(column(3, verbatimTextOutput("value"))),
-            
+
             # select Biopsies
-            checkboxGroupInput(inputId="which", label="Select:", 
+            checkboxGroupInput(inputId="which", label="Select:",
                                choices = c("Choice 1"="Choice1","Choice 2"="Choice2","Choice 3"="Choice3"),
                                selected = c("Choice1","Choice2","Choice3")),
             hr(),
@@ -42,7 +42,7 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-    
+
     output$sampleChoice <- renderPrint(print(input$which))
 
     output$distPlot <- renderPlot({
@@ -54,8 +54,11 @@ server <- function(input, output) {
         hist(x, breaks = bins, col = 'darkgray', border = 'white',
              xlab = 'Waiting time to next eruption (in mins)',
              main = 'Histogram of waiting times')
+
+        plotRNA.FUN(mydata, geneName=NULL, ensemblID=NULL)
+
     })
 }
 
-# Run the application 
+# Run the application
 shinyApp(ui = ui, server = server)
