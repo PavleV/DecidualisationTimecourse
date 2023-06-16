@@ -18,12 +18,8 @@ ui <- fluidPage(
             # Choose gene name
             textInput("genename", label = h3("Gene Name"), value = NULL, placeholder="Enter gene name..."),
 
-            #hr(),
             # choose a genomic region
             textInput("genome_coord", label = h3("Genomic region"), value = NULL, placeholder="Enter chromosomal location..."),
-
-
-            #fluidRow(column(3, verbatimTextOutput("value"))),
 
             # select Biopsies
             checkboxGroupInput(inputId="which", label="Select samples:",
@@ -35,7 +31,9 @@ ui <- fluidPage(
         # Show a plot of the generated distribution
         mainPanel(
             h3(textOutput("sampleChoice", container = span)),
-            plotOutput("distPlot")
+            plotOutput("rnaPlot"),
+            h3(textOutput("genome_coord", container = span)),
+            plotOutput("atacPlot")
         )
     )
 )
@@ -45,7 +43,7 @@ server <- function(input, output) {
 
     output$sampleChoice <- renderText(input$which, sep=", ")
 
-    output$distPlot <- renderPlot({
+    output$rnaPlot <- renderPlot({
         # draw the line plot of RNA expression based on genename/ensemblID and selected biopsies
         plotRNA.FUN(mydata = AH_EL_RNA_ALLREPS, geneName=input$genename, ensemblID=NULL, biopsies = input$which)
 
