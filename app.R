@@ -3,6 +3,7 @@
 ##
 
 library(shiny)
+source("functions.R")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -15,21 +16,20 @@ ui <- fluidPage(
         sidebarPanel(
 
             # Choose gene name
-            textInput("genename", label = h3("Gene Name"), value = "Enter gene name..."),
+            textInput("genename", label = h3("Gene Name"), value = NULL, placeholder="Enter gene name..."),
 
-            hr(),
-            fluidRow(column(3, verbatimTextOutput("value"))),
+            #hr(),
+            # choose a genomic region
+            textInput("genome_coord", label = h3("Genomic region"), value = NULL, placeholder="Enter chromosomal location..."),
+
+
+            #fluidRow(column(3, verbatimTextOutput("value"))),
 
             # select Biopsies
-            checkboxGroupInput(inputId="which", label="Select:",
-                               choices = c("Choice 1"="Choice1","Choice 2"="Choice2","Choice 3"="Choice3"),
-                               selected = c("Choice1","Choice2","Choice3")),
-            hr(),
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
+            checkboxGroupInput(inputId="which", label="Select samples:",
+                               choices = c("Sample 1"="S169","Sample 2"="S170","Sample 3"="S506", "Sample 4"="S508"),
+                               selected = c("S169","S170","S506","S508"))#,
+
         ),
 
         # Show a plot of the generated distribution
@@ -43,19 +43,11 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
-    output$sampleChoice <- renderPrint(print(input$which))
+    output$sampleChoice <- renderText(input$which, sep=", ")
 
     output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white',
-             xlab = 'Waiting time to next eruption (in mins)',
-             main = 'Histogram of waiting times')
-
-        plotRNA.FUN(mydata, geneName=NULL, ensemblID=NULL)
+        # draw the line plot of RNA expression based on genename/ensemblID and selected biopsies
+        plotRNA.FUN(mydata = AH_EL_RNA_ALLREPS, geneName=input$genename, ensemblID=NULL, biopsies = input$which)
 
     })
 }
