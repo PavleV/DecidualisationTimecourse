@@ -6,5 +6,7 @@ DecidualisationTimecourse.Rproj
 .DS_store
 AH_EL_RNA_ALLREPS.csv
 ATAC_countsmatrix_cleaned.csv
+ATAC_countsmatrix_cleaned_230616.csv
+Alex_ATAC_peaks_hg19_201110.bed
 Alex_RNA_graphs.Rmd
 Alex_ATAC_graphs.Rmd

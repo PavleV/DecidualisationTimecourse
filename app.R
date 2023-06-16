@@ -28,7 +28,7 @@ ui <- fluidPage(
 
         ),
 
-        # Show a plot of the generated distribution
+        # Show the generated plots
         mainPanel(
             h3(textOutput("sampleChoice", container = span)),
             plotOutput("rnaPlot"),
@@ -38,7 +38,7 @@ ui <- fluidPage(
     )
 )
 
-# Define server logic required to draw a histogram
+# Define server logic required to draw plots
 server <- function(input, output) {
 
     output$sampleChoice <- renderText(input$which, sep=", ")
@@ -46,7 +46,13 @@ server <- function(input, output) {
     output$rnaPlot <- renderPlot({
         # draw the line plot of RNA expression based on genename/ensemblID and selected biopsies
         plotRNA.FUN(mydata = AH_EL_RNA_ALLREPS, geneName=input$genename, ensemblID=NULL, biopsies = input$which)
+    })
 
+    output$genome_coord <- renderText(input$genome_coord, sep=", ")
+
+    output$atacPlot <- renderPlot({
+        # draw the line plot based on peaks within the specified genomic coordinates
+        plotATAC.FUN(mydata=ATAC_countsmatrix_cleaned, coordinate.key = AllPeaks.granges, coordinates = input$genome_coord)
     })
 }
 

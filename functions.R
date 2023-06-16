@@ -111,14 +111,15 @@ subset.ATAC.FUN <- function(mydata = ATAC_countsmatrix_cleaned, coordinate.key =
 
 # function for plotting ATAC peaks based on set of valid genomic coordinates
 
-ATAC.plot.data <- subset.ATAC.FUN(coordinates = "chr1:200-30000")
 
-plotATAC.FUN <- function(mydata){
+plotATAC.FUN <- function(mydata = ATAC_countsmatrix_cleaned, coordinate.key = AllPeaks.granges, coordinates){
 
-  p1 <- ggplot(mydata)+
-    geom_line(geom_line(aes(x=as.numeric(Hours),y=value,colour=Biopsy)))
+  plot.data <- subset.ATAC.FUN(mydata = mydata, coordinate.key = coordinate.key, coordinates = coordinates)
 
-  return(print(p1))
+  p1 <- ggplot(plot.data,aes(x=as.numeric(Hours),y=value,colour=PeakID))+
+    geom_line()
+
+  print(p1)
 
 }
 
