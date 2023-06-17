@@ -18,13 +18,15 @@ ui <- fluidPage(
             # Choose gene name
             textInput("genename", label = h3("Gene Name"), value = NULL, placeholder="Enter gene name..."),
 
-            # choose a genomic region
-            textInput("genome_coord", label = h3("Genomic region"), value = NULL, placeholder="Enter chromosomal location..."),
-
             # select Biopsies
             checkboxGroupInput(inputId="which", label="Select samples:",
                                choices = c("Sample 1"="S169","Sample 2"="S170","Sample 3"="S506", "Sample 4"="S508"),
-                               selected = c("S169","S170","S506","S508"))#,
+                               selected = c("S169","S170","S506","S508")),
+
+            # choose a genomic region
+            textInput("genome_coord", label = h3("Genomic region"), value = NULL, placeholder="Enter chromosomal location...")#,
+
+
 
         ),
 
@@ -44,8 +46,10 @@ server <- function(input, output) {
     output$sampleChoice <- renderText(input$which, sep=", ")
 
     output$rnaPlot <- renderPlot({
+        # split multiple entries into character vector
+        geneNames.to.plot <- str_split_1(input$genename, pattern=regex("[:,_-[:space:]]"))
         # draw the line plot of RNA expression based on genename/ensemblID and selected biopsies
-        plotRNA.FUN(mydata = AH_EL_RNA_ALLREPS, geneName=input$genename, ensemblID=NULL, biopsies = input$which)
+        plotRNA.FUN(mydata = AH_EL_RNA_ALLREPS, geneName=geneNames.to.plot, ensemblID=NULL, biopsies = input$which)
     })
 
     output$genome_coord <- renderText(input$genome_coord, sep=", ")

@@ -16,13 +16,13 @@ AH_EL_RNA_ALLREPS <- read.csv("./Data/AH_EL_RNA_ALLREPS.csv")
 subset.RNA.FUN <- function(mydata=AH_EL_RNA_ALLREPS, geneName=NULL, ensemblID=NULL){
 
   if(!is.null(geneName) & !is.null(ensemblID)){
-    return(subset(mydata, GeneName==geneName & EnsemblID ==ensemblID))
+    return(subset(mydata, GeneName %in% geneName & EnsemblID == ensemblID))
   }
   if(!is.null(geneName) & is.null(ensemblID)){
-    return(subset(mydata, GeneName==geneName))
+    return(subset(mydata, GeneName %in% geneName))
   }
   if(is.null(geneName) & !is.null(ensemblID)){
-    return(subset(mydata, EnsemblID ==ensemblID))
+    return(subset(mydata, EnsemblID == ensemblID))
   }
 
 }
@@ -31,7 +31,7 @@ subset.RNA.FUN <- function(mydata=AH_EL_RNA_ALLREPS, geneName=NULL, ensemblID=NU
 
 arrange.FUN <- function(mydata, geneName=NULL, ensemblID=NULL){
 
-  mydata.subset <- subset.RNA.FUN(mydata=mydata, geneName=geneName, ensemblID=ensemblID)
+  mydata.subset <- subset.RNA.FUN(mydata=mydata, geneName = geneName, ensemblID=ensemblID)
   mydata.subset <-  pivot_longer(mydata.subset, cols = colnames(mydata)[2:40])
 
   mydata.subset <- cbind(mydata.subset,str_split(mydata.subset$name,pattern="_", simplify = T))
@@ -58,12 +58,27 @@ plotRNA.FUN <- function(mydata, geneName=NULL, ensemblID=NULL, biopsies = c("S16
 
   data.sub <- subset(data.sub, Biopsy %in% biopsies & Hours %in% times)
 
+  if(length(geneName) == 1){
+
   p1 <- ggplot(subset(data.sub))+
     geom_line(aes(x=as.numeric(Hours),y=TPM,colour=Biopsy))+
     stat_summary(aes(x=as.numeric(Hours),y=TPM), geom = "line", fun.y = mean)+
     theme_bw()+#theme(legend.position="none")+
     scale_x_continuous(breaks=times, minor_breaks = NULL)+
     labs(y="Transcripts per Million", x="Hours")+ggtitle(paste0(geneName,ensemblID))
+
+  }
+
+  if(length(geneName) >= 2){
+
+    p1 <- ggplot(subset(data.sub))+
+      #geom_line(aes(x=as.numeric(Hours),y=TPM,colour=GeneName))+
+      stat_summary(aes(x=as.numeric(Hours),y=TPM,colour=GeneName), geom = "line", fun.y = mean)+
+      theme_bw()+#theme(legend.position="none")+
+      scale_x_continuous(breaks=times, minor_breaks = NULL)+
+      labs(y="Transcripts per Million", x="Hours")#+ggtitle(paste0(geneName,ensemblID))
+
+  }
 
 
   print(p1)
