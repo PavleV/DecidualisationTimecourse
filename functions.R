@@ -72,9 +72,8 @@ plotRNA.FUN <- function(mydata, geneName=NULL, ensemblID=NULL, biopsies = c("S16
   if(length(geneName) >= 2){
 
     p1 <- ggplot(subset(data.sub))+
-      #geom_line(aes(x=as.numeric(Hours),y=TPM,colour=GeneName))+
       stat_summary(aes(x=as.numeric(Hours),y=TPM,colour=GeneName), geom = "line", fun.y = mean)+
-      theme_bw()+#theme(legend.position="none")+
+      theme_bw()+
       scale_x_continuous(breaks=times, minor_breaks = NULL)+
       labs(y="Transcripts per Million", x="Hours")#+ggtitle(paste0(geneName,ensemblID))
 
@@ -131,8 +130,9 @@ plotATAC.FUN <- function(mydata = ATAC_countsmatrix_cleaned, coordinate.key = Al
 
   plot.data <- subset.ATAC.FUN(mydata = mydata, coordinate.key = coordinate.key, coordinates = coordinates)
 
-  p1 <- ggplot(plot.data,aes(x=as.numeric(Hours),y=value,colour=PeakID))+
-    geom_line()
+  p1 <- ggplot(plot.data)+
+    stat_summary(aes(x=as.numeric(Hours),y=value,colour=PeakID), geom = "line", fun.y = mean)+
+    theme_bw()
 
   print(p1)
 
