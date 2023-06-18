@@ -126,12 +126,13 @@ subset.ATAC.FUN <- function(mydata = ATAC_countsmatrix_cleaned, coordinate.key =
 # function for plotting ATAC peaks based on set of valid genomic coordinates
 
 
-plotATAC.FUN <- function(mydata = ATAC_countsmatrix_cleaned, coordinate.key = AllPeaks.granges, coordinates){
+plotATAC.FUN <- function(mydata = ATAC_countsmatrix_cleaned, coordinate.key = AllPeaks.granges, coordinates, times = c(0,3,6,9,12,18,24,36,48,96)){
 
   plot.data <- subset.ATAC.FUN(mydata = mydata, coordinate.key = coordinate.key, coordinates = coordinates)
 
   p1 <- ggplot(plot.data)+
     stat_summary(aes(x=as.numeric(Hours),y=value,colour=PeakID), geom = "line", fun.y = mean, size = 2)+
+    scale_x_continuous(breaks=times, minor_breaks = NULL)+
     theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=10), title= element_text(size=20) )+
     labs(y="Counts", x="Hours")
 
