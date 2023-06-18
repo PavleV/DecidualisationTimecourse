@@ -5,10 +5,10 @@ account: pavlev
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 9321247
-bundleId: 7358442
+bundleId: 7358520
 url: https://pavlev.shinyapps.io/DecidualisationTimecourse/
-when: 1687068977.83849
-lastSyncTime: 1687068977.8385
+when: 1687072085.23739
+lastSyncTime: 1687072085.2374
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: .RData|Alex_ATAC_graphs.Rmd|Alex_RNA_graphs.Rmd|Data/.DS_Store
