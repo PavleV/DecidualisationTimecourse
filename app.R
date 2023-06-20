@@ -33,6 +33,10 @@ ui <- fluidPage(
 
             conditionalPanel(
                 condition = "input.link == '1'",
+                # select gene regions
+                radioButtons("gene_region", label = h3("Gene regions"),
+                             choices = list("TSS" = "TSS", "Whole gene" = "Whole", "TTS" = "TTS"),
+                             selected = "Whole"),
                 #numeric input of up and downstream
                 numericInput("add_up", label = h3("Add upstream bases"), value = 0),
                 numericInput("add_down", label = h3("Add downstream bases"), value = 0)
@@ -82,28 +86,13 @@ server <- function(input, output) {
         plotRNA.FUN(mydata = AH_EL_RNA_ALLREPS, geneName=geneNames.to.plot, ensemblID=NULL, biopsies = input$which)
     })
 
-    #output$genome_coord <- renderText({
-
-    #    if(!is.null(input$genename) & input$link == '1')
-    #    {
-    #        NULL
-
-    #    }
-    #    if(!is.null(input$genome_coord) & input$link != '1')
-    #    {
-    #        input$genome_coord
-    #    }
-
-
-     #   })
-
 
     output$atacPlot <- renderPlot({
 
             if(!is.null(input$genename) & input$link == '1')
             {
                 gene_names <- str_split_1(input$genename, pattern=regex("[:,_-[:space:]]"))
-                genomic_coordinates <- extractCoordfromGene(genes=gene_names, geneCoordKey=geneKey.ranges, add.upstream = input$add_up, add.downstream = input$add_down)
+                genomic_coordinates <- extractCoordfromGene(genes=gene_names, geneCoordKey=geneKey.ranges, add.upstream = input$add_up, add.downstream = input$add_down, gene.region = input$gene_region)
 
             }
             if(!is.null(input$genome_coord) & input$link != '1')

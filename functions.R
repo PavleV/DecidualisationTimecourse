@@ -128,12 +128,37 @@ grexpand <- function(x, upstream=0, downstream=0){
   trim(x)
 }
 
+grcontract <- function(x, gene.region){
+  if (any(strand(x) == "*")){
+    warning("'*' ranges were treated as '+'")}
+  on_plus <- strand(x) == "+" | strand(x) == "*"
+
+  if(gene.region == "TSS"){
+    new_start <- ifelse(on_plus, start(x), end(x)-1)
+    new_end <- ifelse(on_plus,start(x)+1, end(x))
+  }
+  if(gene.region == "TTS"){
+
+    new_start <- ifelse(on_plus, end(x)-1, start(x))
+    new_end <- ifelse(on_plus, end(x), start(x)+1)
+
+  }
+  if(gene.region == "Whole"){
+    new_start <- start(x)
+    new_end <- end(x)
+  }
+
+  ranges(x) <- IRanges(new_start, new_end)
+  trim(x)
+}
+
 
 # find coordinates based on gene names
 
-extractCoordfromGene <- function(genes=NULL, geneCoordKey=geneKey.ranges, add.upstream = 0, add.downstream = 0){
+extractCoordfromGene <- function(genes=NULL, geneCoordKey=geneKey.ranges, add.upstream = 0, add.downstream = 0, gene.region = "Whole"){
 
   coordinates <- subset(geneKey.ranges, mcols.GeneName %in% genes)
+  coordinates <- grcontract(coordinates, gene.region = gene.region)
 
   coordinates <- grexpand(coordinates, upstream = add.upstream, downstream= add.downstream)
 
