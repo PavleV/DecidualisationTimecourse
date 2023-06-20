@@ -51,9 +51,9 @@ ui <- fluidPage(
 
         # Show the generated plots
         mainPanel(
-            h3(textOutput("sampleChoice", container = span)),
+            #h3(textOutput("sampleChoice", container = span)),
             plotOutput("rnaPlot"),
-            h3(textOutput("genome_coord", container = span)),
+            #h3(textOutput("genome_coord", container = span)),
             plotOutput("atacPlot")
         )
     )
@@ -82,7 +82,20 @@ server <- function(input, output) {
         plotRNA.FUN(mydata = AH_EL_RNA_ALLREPS, geneName=geneNames.to.plot, ensemblID=NULL, biopsies = input$which)
     })
 
-    output$genome_coord <- renderText(input$genome_coord, sep=", ")
+    #output$genome_coord <- renderText({
+
+    #    if(!is.null(input$genename) & input$link == '1')
+    #    {
+    #        NULL
+
+    #    }
+    #    if(!is.null(input$genome_coord) & input$link != '1')
+    #    {
+    #        input$genome_coord
+    #    }
+
+
+     #   })
 
 
     output$atacPlot <- renderPlot({
