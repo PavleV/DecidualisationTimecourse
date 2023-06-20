@@ -9,6 +9,10 @@ library(GenomicRanges)
 
 AH_EL_RNA_ALLREPS <- read.csv("./Data/AH_EL_RNA_ALLREPS.csv")
 
+Gene_key_hg19 <- read.delim("./Data/Gene_key_hg19.txt")
+
+geneKey.ranges <- GRanges(seq=Gene_key_hg19$Chromosome,IRanges(start=Gene_key_hg19$Start, end=Gene_key_hg19$End), strand=Gene_key_hg19$Strand,mcols=Gene_key_hg19[,c("EnsemblID","GeneName")])
+
 
 # Functions
 
@@ -105,11 +109,37 @@ extractCoord <- function(string.input){
 
 }
 
+# extend coordinates
+
+grexpand <- function(x, upstream=0, downstream=0){
+  if (any(strand(x) == "*")){
+    warning("'*' ranges were treated as '+'")}
+  on_plus <- strand(x) == "+" | strand(x) == "*"
+  new_start <- start(x) - ifelse(on_plus, upstream, downstream)
+  new_end <- end(x) + ifelse(on_plus, downstream, upstream)
+  ranges(x) <- IRanges(new_start, new_end)
+  trim(x)
+}
+
+
+# find coordinates based on gene names
+
+extractCoordfromGene <- function(genes=NULL, geneCoordKey=geneKey.ranges, add.upstream = 0, add.downstream = 0){
+
+  coordinates <- subset(geneKey.ranges, mcols.GeneName %in% genes)
+
+  coordinates <- grexpand(coordinates, upstream = add.upstream, downstream= add.downstream)
+
+  return(coordinates)
+
+}
+
+
 # function for subsetting data matrix given a set of coordinates
 
 subset.ATAC.FUN <- function(mydata = ATAC_countsmatrix_cleaned, coordinate.key = AllPeaks.granges, coordinates){
 
-  mydata.subset <- mydata[subjectHits(findOverlaps(extractCoord(coordinates), coordinate.key)),]
+  mydata.subset <- mydata[subjectHits(findOverlaps(coordinates, coordinate.key)),]
 
   mydata.subset$PeakID <- row.names(mydata.subset)
 
