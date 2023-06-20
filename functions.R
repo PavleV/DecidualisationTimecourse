@@ -97,6 +97,7 @@ Alex_ATAC_peaks_hg19_201110 <- read.delim("./Data/Alex_ATAC_peaks_hg19_201110.be
 
 AllPeaks.granges <- GRanges(seqnames = Alex_ATAC_peaks_hg19_201110[,1], ranges = IRanges(start=Alex_ATAC_peaks_hg19_201110[,2], end=Alex_ATAC_peaks_hg19_201110[,3]), mcols = data.frame(PeakID = Alex_ATAC_peaks_hg19_201110[,4]))
 
+ATAC_TPMmatrix <- as.data.frame(tpm3(ATAC_countsmatrix_cleaned,width(AllPeaks.granges)))
 
 # function for extracting genomic coordinates from text input and generating genomic ranges object
 
@@ -137,7 +138,7 @@ extractCoordfromGene <- function(genes=NULL, geneCoordKey=geneKey.ranges, add.up
 
 # function for subsetting data matrix given a set of coordinates
 
-subset.ATAC.FUN <- function(mydata = ATAC_countsmatrix_cleaned, coordinate.key = AllPeaks.granges, coordinates){
+subset.ATAC.FUN <- function(mydata = ATAC_TPMmatrix, coordinate.key = AllPeaks.granges, coordinates){
 
   mydata.subset <- mydata[subjectHits(findOverlaps(coordinates, coordinate.key)),]
 
@@ -156,7 +157,7 @@ subset.ATAC.FUN <- function(mydata = ATAC_countsmatrix_cleaned, coordinate.key =
 # function for plotting ATAC peaks based on set of valid genomic coordinates
 
 
-plotATAC.FUN <- function(mydata = ATAC_countsmatrix_cleaned, coordinate.key = AllPeaks.granges, coordinates, times = c(0,3,6,9,12,18,24,36,48,96)){
+plotATAC.FUN <- function(mydata = ATAC_TPMmatrix, coordinate.key = AllPeaks.granges, coordinates, times = c(0,3,6,9,12,18,24,36,48,96)){
 
   plot.data <- subset.ATAC.FUN(mydata = mydata, coordinate.key = coordinate.key, coordinates = coordinates)
 
@@ -164,10 +165,9 @@ plotATAC.FUN <- function(mydata = ATAC_countsmatrix_cleaned, coordinate.key = Al
     stat_summary(aes(x=as.numeric(Hours),y=value,colour=PeakID), geom = "line", fun.y = mean, size = 2)+
     scale_x_continuous(breaks=times, minor_breaks = NULL)+
     theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=10), title= element_text(size=20) )+
-    labs(y="Counts", x="Hours")
+    labs(y="RPM", x="Hours")
 
   print(p1)
 
 }
-
 
