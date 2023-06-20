@@ -16,37 +16,37 @@ ui <- fluidPage(
         sidebarPanel(
 
             # Choose how to deal with gene names and genomic locations
-            radioButtons("link", label = h3("Link genes and genomic coordinates"),
+            radioButtons("link", label = h4("Link genes and genomic coordinates"),
                          choices = list("By gene name" = 1, "By genomic location" = 2, "Separate genes and genomic coordinates" = 3),
                          selected = 1),
 
             # select Biopsies
-            checkboxGroupInput(inputId="which", label="Select samples for RNA plot:",
+            checkboxGroupInput(inputId="which", label=h4("Select samples for RNA plot:"),
                                choices = c("Sample 1"="S169","Sample 2"="S170","Sample 3"="S506", "Sample 4"="S508"),
                                selected = c("S169","S170","S506","S508")),
 
             # Choose gene name
             conditionalPanel(
                 condition = "input.link != '2'",
-            textInput("genename", label = h3("Gene Name(s)"), value = "SCARA5", placeholder="Enter one or more gene names..."),
+            textInput("genename", label = h4("Gene Name(s)"), value = "SCARA5", placeholder="Enter one or more gene names..."),
             ),
 
             conditionalPanel(
                 condition = "input.link == '1'",
                 # select gene regions
-                radioButtons("gene_region", label = h3("Gene regions"),
+                radioButtons("gene_region", label = h4("Gene regions"),
                              choices = list("TSS" = "TSS", "Whole gene" = "Whole", "TTS" = "TTS"),
                              selected = "Whole"),
                 #numeric input of up and downstream
-                numericInput("add_up", label = h3("Add upstream bases"), value = 0),
-                numericInput("add_down", label = h3("Add downstream bases"), value = 0)
+                numericInput("add_up", label = h4("Add upstream bases"), value = 0),
+                numericInput("add_down", label = h4("Add downstream bases"), value = 0)
             ),
 
             # choose a genomic region
 
             conditionalPanel(
                 condition = "input.link != '1'",
-                textInput("genome_coord", label = h3("Genomic region (hg19)"), value = "chr8:27696656-27881112", placeholder="Enter chromosomal location...")
+                textInput("genome_coord", label = h4("Genomic region (hg19)"), value = "chr8:27696656-27881112", placeholder="Enter chromosomal location...")
 
             )
 
@@ -55,10 +55,8 @@ ui <- fluidPage(
 
         # Show the generated plots
         mainPanel(
-            #h3(textOutput("sampleChoice", container = span)),
-            plotOutput("rnaPlot"),
-            #h3(textOutput("genome_coord", container = span)),
-            plotOutput("atacPlot")
+             plotOutput("rnaPlot"),
+             plotOutput("atacPlot")
         )
     )
 )
