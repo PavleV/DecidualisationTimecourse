@@ -67,9 +67,9 @@ plotRNA.FUN <- function(mydata, geneName=NULL, ensemblID=NULL, biopsies = c("S16
   p1 <- ggplot(subset(data.sub))+
     geom_line(aes(x=as.numeric(Hours),y=TPM,colour=Biopsy), size = 2)+
     stat_summary(aes(x=as.numeric(Hours),y=TPM), geom = "line", fun.y = mean, size = 2)+
-    theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=10), title= element_text(size=20) )+
+    theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=15), title= element_text(size=20) )+
     scale_x_continuous(breaks=times, minor_breaks = NULL)+
-    labs(y="Transcripts per Million", x="Hours")+ggtitle(paste0(geneName,ensemblID))
+    labs(y="Transcripts per Million", x="Hours")+ggtitle("RNA-seq")
 
   }
 
@@ -77,9 +77,9 @@ plotRNA.FUN <- function(mydata, geneName=NULL, ensemblID=NULL, biopsies = c("S16
 
     p1 <- ggplot(subset(data.sub))+
       stat_summary(aes(x=as.numeric(Hours),y=TPM,colour=GeneName), geom = "line", fun.y = mean, size = 2)+
-      theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=10), title= element_text(size=20) )+
+      theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=15), title= element_text(size=20) )+
       scale_x_continuous(breaks=times, minor_breaks = NULL)+
-      labs(y="Transcripts per Million", x="Hours")#+ggtitle(paste0(geneName,ensemblID))
+      labs(y="Transcripts per Million", x="Hours")+ggtitle("RNA-seq")
 
   }
 
@@ -110,6 +110,10 @@ ATAC_TPMmatrix <- as.data.frame(tpm3(ATAC_countsmatrix_cleaned,width(AllPeaks.gr
 extractCoord <- function(string.input){
 
   coordinates <- str_split_1(string.input, pattern=regex("[:,_-[:space:]]"))
+
+  if (length(coordinates) != 3 || any(is.na(as.numeric(coordinates[2:3])))) {
+    stop("Invalid genomic region provided. Please provide a valid genomic region in the format 'chr:start-end'.")
+  }
 
   return(GRanges(seqnames = coordinates[1], ranges = IRanges(start=as.numeric(coordinates[2]), end=as.numeric(coordinates[3]))))
 
@@ -171,6 +175,10 @@ extractCoordfromGene <- function(genes=NULL, geneCoordKey=geneKey.ranges, add.up
 
 subset.ATAC.FUN <- function(mydata = ATAC_TPMmatrix, coordinate.key = AllPeaks.granges, coordinates){
 
+  if (length(coordinates) == 0 || any(is.na(coordinates$start)) || any(is.na(coordinates$end))) {
+    stop("Invalid gene name or genomic location provided. Please provide a valid gene name or genomic location.")
+  }
+
   mydata.subset <- mydata[subjectHits(findOverlaps(coordinates, coordinate.key)),]
 
   mydata.subset$PeakID <- row.names(mydata.subset)
@@ -190,15 +198,24 @@ subset.ATAC.FUN <- function(mydata = ATAC_TPMmatrix, coordinate.key = AllPeaks.g
 
 plotATAC.FUN <- function(mydata = ATAC_TPMmatrix, coordinate.key = AllPeaks.granges, coordinates, times = c(0,3,6,9,12,18,24,36,48,96)){
 
+  if (length(coordinates) == 0 || any(is.na(coordinates))) {
+    stop("Invalid gene name or genomic location provided. Please provide a valid gene name or genomic location.")
+  }
+
   plot.data <- subset.ATAC.FUN(mydata = mydata, coordinate.key = coordinate.key, coordinates = coordinates)
 
   p1 <- ggplot(plot.data)+
     stat_summary(aes(x=as.numeric(Hours),y=value,colour=PeakID), geom = "line", fun.y = mean, size = 2)+
     scale_x_continuous(breaks=times, minor_breaks = NULL)+
-    theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=10), title= element_text(size=20) )+
-    labs(y="RPM", x="Hours")
+    theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=15), title= element_text(size=20) )+
+    labs(y="RPM", x="Hours")+ggtitle("ATAC-seq")
 
   print(p1)
 
 }
 
+
+plot_error_message <- function(message) {
+  plot(1, type = "n", xlim = c(0, 1), ylim = c(0, 1), xlab = "", ylab = "", main = "")
+  text(x = 0.5, y = 0.5, label = message, cex = 1.5, col = "red", font = 2)
+}
