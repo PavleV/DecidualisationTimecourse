@@ -48,7 +48,7 @@ arrange.FUN <- function(mydata, geneName=NULL, ensemblID=NULL){
 
 
 
-plotRNA.FUN <- function(mydata, geneName=NULL, ensemblID=NULL, biopsies = c("S169","S170","S506","S508"), times = c(0,3,6,9,12,18,24,36,48,96)){
+plotRNA.FUN <- function(mydata, geneName=NULL, ensemblID=NULL, biopsies = c("S169","S170","S506","S508"), times = c(0,3,6,9,12,18,24,36,48,96), yaxis= "TPM"){
 
   if(is.null(geneName) & is.null(ensemblID)){
     return(
@@ -62,25 +62,52 @@ plotRNA.FUN <- function(mydata, geneName=NULL, ensemblID=NULL, biopsies = c("S16
 
   data.sub <- subset(data.sub, Biopsy %in% biopsies & Hours %in% times)
 
-  if(length(geneName) == 1){
+  if(yaxis == "TPM" ){
 
-  p1 <- ggplot(subset(data.sub))+
-    geom_line(aes(x=as.numeric(Hours),y=TPM,colour=Biopsy), size = 2)+
-    stat_summary(aes(x=as.numeric(Hours),y=TPM), geom = "line", fun.y = mean, size = 2)+
-    theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=15), title= element_text(size=20) )+
-    scale_x_continuous(breaks=times, minor_breaks = NULL)+
-    labs(y="Transcripts per Million", x="Hours")+ggtitle("RNA-seq")
+    if(length(geneName) == 1){
 
+      p1 <- ggplot(subset(data.sub))+
+        geom_line(aes(x=as.numeric(Hours),y=TPM,colour=Biopsy), size = 2)+
+        stat_summary(aes(x=as.numeric(Hours),y=TPM), geom = "line", fun.y = mean, size = 2)+
+        theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=15), title= element_text(size=20) )+
+        scale_x_continuous(breaks=times, minor_breaks = NULL)+
+        labs(y="Transcripts per Million", x="Hours")+ggtitle("RNA-seq")
+
+    }
+
+    if(length(geneName) >= 2){
+
+      p1 <- ggplot(subset(data.sub))+
+        stat_summary(aes(x=as.numeric(Hours),y=TPM,colour=GeneName), geom = "line", fun.y = mean, size = 2)+
+        theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=15), title= element_text(size=20) )+
+        scale_x_continuous(breaks=times, minor_breaks = NULL)+
+        labs(y="Transcripts per Million", x="Hours")+ggtitle("RNA-seq")
+
+    }
   }
 
-  if(length(geneName) >= 2){
+  if(yaxis == "log"){
 
-    p1 <- ggplot(subset(data.sub))+
-      stat_summary(aes(x=as.numeric(Hours),y=TPM,colour=GeneName), geom = "line", fun.y = mean, size = 2)+
-      theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=15), title= element_text(size=20) )+
-      scale_x_continuous(breaks=times, minor_breaks = NULL)+
-      labs(y="Transcripts per Million", x="Hours")+ggtitle("RNA-seq")
+    if(length(geneName) == 1){
 
+      p1 <- ggplot(subset(data.sub))+
+        geom_line(aes(x=as.numeric(Hours),y=log10(TPM),colour=Biopsy), size = 2)+
+        stat_summary(aes(x=as.numeric(Hours),y=log10(TPM)), geom = "line", fun.y = mean, size = 2)+
+        theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=15), title= element_text(size=20) )+
+        scale_x_continuous(breaks=times, minor_breaks = NULL)+
+        labs(y="Transcripts per Million (log10)", x="Hours")+ggtitle("RNA-seq")
+
+    }
+
+    if(length(geneName) >= 2){
+
+      p1 <- ggplot(subset(data.sub))+
+        stat_summary(aes(x=as.numeric(Hours),y=log10(TPM),colour=GeneName), geom = "line", fun.y = mean, size = 2)+
+        theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=15), title= element_text(size=20) )+
+        scale_x_continuous(breaks=times, minor_breaks = NULL)+
+        labs(y="Transcripts per Million (log10)", x="Hours")+ggtitle("RNA-seq")
+
+    }
   }
 
 
@@ -219,3 +246,7 @@ plot_error_message <- function(message) {
   plot(1, type = "n", xlim = c(0, 1), ylim = c(0, 1), xlab = "", ylab = "", main = "")
   text(x = 0.5, y = 0.5, label = message, cex = 1.5, col = "red", font = 2)
 }
+
+
+
+
