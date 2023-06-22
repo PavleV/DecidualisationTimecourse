@@ -3,6 +3,7 @@
 library(tidyverse)
 library(ggplot2)
 library(GenomicRanges)
+library(patchwork)
 
 
 # load data
@@ -49,14 +50,6 @@ arrange.FUN <- function(mydata, geneName=NULL, ensemblID=NULL){
 
 
 plotRNA.FUN <- function(mydata, geneName=NULL, ensemblID=NULL, biopsies = c("S169","S170","S506","S508"), times = c(0,3,6,9,12,18,24,36,48,96)){
-
-  if(is.null(geneName) & is.null(ensemblID)){
-    return(
-      print(
-        ggplot()+theme_bw()
-      )
-    )
-  }
 
   data.sub <- arrange.FUN(mydata=mydata, geneName=geneName, ensemblID=ensemblID)
 
