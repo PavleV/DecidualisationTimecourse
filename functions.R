@@ -3,7 +3,7 @@
 library(tidyverse)
 library(ggplot2)
 library(GenomicRanges)
-library(patchwork)
+library(egg)
 
 
 # load data
@@ -49,31 +49,58 @@ arrange.FUN <- function(mydata, geneName=NULL, ensemblID=NULL){
 
 
 
-plotRNA.FUN <- function(mydata, geneName=NULL, ensemblID=NULL, biopsies = c("S169","S170","S506","S508"), times = c(0,3,6,9,12,18,24,36,48,96)){
+plotRNA.FUN <- function(mydata, geneName=NULL, ensemblID=NULL, biopsies = c("S169","S170","S506","S508"), times = c(0,3,6,9,12,18,24,36,48,96), yaxis = "TPM"){
 
   data.sub <- arrange.FUN(mydata=mydata, geneName=geneName, ensemblID=ensemblID)
 
   data.sub <- subset(data.sub, Biopsy %in% biopsies & Hours %in% times)
 
-  if(length(geneName) == 1){
+  if(yaxis == "TPM" ){
 
-  p1 <- ggplot(subset(data.sub))+
-    geom_line(aes(x=as.numeric(Hours),y=TPM,colour=Biopsy), size = 2)+
-    stat_summary(aes(x=as.numeric(Hours),y=TPM), geom = "line", fun.y = mean, size = 2)+
-    theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=15), title= element_text(size=20) )+
-    scale_x_continuous(breaks=times, minor_breaks = NULL)+
-    labs(y="Transcripts per Million", x="Hours")+ggtitle("RNA-seq")
-
-  }
-
-  if(length(geneName) >= 2){
+    if(length(geneName) == 1){
 
     p1 <- ggplot(subset(data.sub))+
-      stat_summary(aes(x=as.numeric(Hours),y=TPM,colour=GeneName), geom = "line", fun.y = mean, size = 2)+
+      geom_line(aes(x=as.numeric(Hours),y=TPM,colour=Biopsy), size = 2)+
+      stat_summary(aes(x=as.numeric(Hours),y=TPM), geom = "line", fun.y = mean, size = 2)+
       theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=15), title= element_text(size=20) )+
       scale_x_continuous(breaks=times, minor_breaks = NULL)+
       labs(y="Transcripts per Million", x="Hours")+ggtitle("RNA-seq")
 
+    }
+
+    if(length(geneName) >= 2){
+
+      p1 <- ggplot(subset(data.sub))+
+        stat_summary(aes(x=as.numeric(Hours),y=TPM,colour=GeneName), geom = "line", fun.y = mean, size = 2)+
+        theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=15), title= element_text(size=20) )+
+        scale_x_continuous(breaks=times, minor_breaks = NULL)+
+        labs(y="Transcripts per Million", x="Hours")+ggtitle("RNA-seq")
+
+    }
+  }
+
+  if(yaxis == "log"){
+
+    if(length(geneName) == 1){
+
+      p1 <- ggplot(subset(data.sub))+
+        geom_line(aes(x=as.numeric(Hours),y=log10(TPM),colour=Biopsy), size = 2)+
+        stat_summary(aes(x=as.numeric(Hours),y=log10(TPM)), geom = "line", fun.y = mean, size = 2)+
+        theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=15), title= element_text(size=20) )+
+        scale_x_continuous(breaks=times, minor_breaks = NULL)+
+        labs(y="Transcripts per Million (log10)", x="Hours")+ggtitle("RNA-seq")
+
+    }
+
+    if(length(geneName) >= 2){
+
+      p1 <- ggplot(subset(data.sub))+
+        stat_summary(aes(x=as.numeric(Hours),y=log10(TPM),colour=GeneName), geom = "line", fun.y = mean, size = 2)+
+        theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=15), title= element_text(size=20) )+
+        scale_x_continuous(breaks=times, minor_breaks = NULL)+
+        labs(y="Transcripts per Million (log10)", x="Hours")+ggtitle("RNA-seq")
+
+    }
   }
 
 
@@ -200,7 +227,7 @@ plotATAC.FUN <- function(mydata = ATAC_TPMmatrix, coordinate.key = AllPeaks.gran
   p1 <- ggplot(plot.data)+
     stat_summary(aes(x=as.numeric(Hours),y=value,colour=PeakID), geom = "line", fun.y = mean, size = 2)+
     scale_x_continuous(breaks=times, minor_breaks = NULL)+
-    theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=15), title= element_text(size=20) )+
+    theme_bw()+theme(axis.title = element_text(size=20), axis.text = element_text(size=20), legend.text= element_text(size=15), title= element_text(size=20) , legend.position = "bottom")+
     labs(y="RPM", x="Hours")+ggtitle("ATAC-seq")
 
   print(p1)

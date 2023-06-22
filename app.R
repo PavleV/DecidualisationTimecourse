@@ -31,6 +31,11 @@ ui <- fluidPage(
             textInput("genename", label = h4("Gene Name(s)"), value = "SCARA5", placeholder="Enter one or more gene names..."),
             ),
 
+            # select y-axis of rnaplot
+            selectInput("yaxis", label = h4("Select RNA plot y-axis"),
+                        choices = list("TPM" = "TPM", "log(TPM)" = "log", "Normalised (z-score)" = "zscore"),
+                        selected = "TPM"),
+
             conditionalPanel(
                 condition = "input.link == 'bygene'",
                 # select gene regions
@@ -55,9 +60,7 @@ ui <- fluidPage(
 
         # Show the generated plots
         mainPanel(
-            plotOutput("comboPlot")#,
-#             plotOutput("rnaPlot"),
-#             plotOutput("atacPlot")
+            plotOutput("comboPlot")
         )
     )
 )
@@ -98,68 +101,16 @@ server <- function(input, output) {
 
         req(geneNames.to.plot)
         # draw the line plot of RNA expression based on genename/ensemblID and selected biopsies
-        rnaplot <- plotRNA.FUN(mydata = AH_EL_RNA_ALLREPS, geneName=geneNames.to.plot, ensemblID=NULL, biopsies = input$which)
+        rnaplot <- plotRNA.FUN(mydata = AH_EL_RNA_ALLREPS, geneName=geneNames.to.plot, ensemblID=NULL, biopsies = input$which, yaxis = input$yaxis)
 
         req(genomic_coordinates)
         # draw the line plot based on peaks within the specified genomic coordinates
         atacplot <- plotATAC.FUN(mydata=ATAC_TPMmatrix, coordinate.key = AllPeaks.granges, coordinates = genomic_coordinates)
 
-        rnaplot + atacplot + plot_layout(ncol = 1)
+        ggarrange(rnaplot, atacplot, ncol=1)
+        #rnaplot + atacplot + plot_layout(ncol = 1, guides = "collect")
 
     })
-
-#    output$rnaPlot <- renderPlot({
-
-#       if(!is.null(input$genename) & input$link != 'bylocation')
-#        {
-#            # split multiple entries into character vector
-#            geneNames.to.plot <- str_split_1(input$genename, pattern=regex("[:,_-[:space:]]"))
-#        }
-#        if(!is.null(input$genome_coord) & input$link == 'bylocation')
-#        {
-#            genomic_coordinates <- extractCoord(input$genome_coord)
-#            geneNames.to.plot <- geneKey.ranges$mcols.GeneName[subjectHits(findOverlaps(genomic_coordinates,geneKey.ranges))]
-#        }
-
-        # Check if geneNames.to.plot is NULL or empty
-        #if (is.null(geneNames.to.plot) || length(geneNames.to.plot) == 0) {
-            # Show an error message
-        #    return(plot_error_message("Please enter a valid gene name."))
-        #}
-
-#        req(geneNames.to.plot)
-        # draw the line plot of RNA expression based on genename/ensemblID and selected biopsies
-#        plotRNA.FUN(mydata = AH_EL_RNA_ALLREPS, geneName=geneNames.to.plot, ensemblID=NULL, biopsies = input$which)
-#    })
-
-
-#    output$atacPlot <- renderPlot({
-
-#            if(!is.null(input$genename) & input$link == 'bygene')
-#            {
-#                gene_names <- str_split_1(input$genename, pattern=regex("[:,_-[:space:]]"))
-#                genomic_coordinates <- extractCoordfromGene(genes=gene_names, geneCoordKey=geneKey.ranges, add.upstream = input$add_up, add.downstream = input$add_down, gene.region = input$gene_region)
-
-#            }
-#            if(!is.null(input$genome_coord) & input$link != 'bygene')
-#            {
-#                genomic_coordinates <- extractCoord(input$genome_coord)
-
-#            }
-
-
-        # Check if genomic_coordinates is NULL or empty
-#        if (is.null(genomic_coordinates) || length(genomic_coordinates) == 0) {
-            # Show an error message
-#            return("Invalid genomic coordinates. Please enter valid coordinates.")
-#        }
-
-#        req(genomic_coordinates)
-
-        # draw the line plot based on peaks within the specified genomic coordinates
-
-#        plotATAC.FUN(mydata=ATAC_TPMmatrix, coordinate.key = AllPeaks.granges, coordinates = genomic_coordinates)
-#    })
 
 }
 
