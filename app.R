@@ -31,6 +31,11 @@ ui <- fluidPage(
             textInput("genename", label = h4("Gene Name(s)"), value = "SCARA5", placeholder="Enter one or more gene names..."),
             ),
 
+            # select y-axis of rnaplot
+            selectInput("yaxis", label = h4("Select RNA plot y-axis:"),
+                        choices = list("TPM" = "TPM", "log(TPM)" = "log", "Normalised (z-score)" = "zscore"),
+                        selected = "TPM"),
+
             conditionalPanel(
                 condition = "input.link == 'bygene'",
                 # select gene regions
@@ -85,7 +90,7 @@ server <- function(input, output) {
 
         req(geneNames.to.plot)
         # draw the line plot of RNA expression based on genename/ensemblID and selected biopsies
-        plotRNA.FUN(mydata = AH_EL_RNA_ALLREPS, geneName=geneNames.to.plot, ensemblID=NULL, biopsies = input$which)
+        plotRNA.FUN(mydata = AH_EL_RNA_ALLREPS, geneName=geneNames.to.plot, ensemblID=NULL, biopsies = input$which, yaxis = input$yaxis)
     })
 
 
