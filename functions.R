@@ -13,6 +13,8 @@ AH_EL_RNA_ALLREPS <- readRDS("./Data/RNA_timecourse_TPM.rds")
 
 Gene_key_hg19 <- read.delim("./Data/Gene_key_hg19.txt")
 
+Gene_key_hg38 <- read.delim("./Data/GRCh38_key_230713.txt")
+
 geneKey.ranges <- GRanges(seq=Gene_key_hg19$Chromosome,IRanges(start=Gene_key_hg19$Start, end=Gene_key_hg19$End), strand=Gene_key_hg19$Strand,mcols=Gene_key_hg19[,c("EnsemblID","GeneName")])
 
 
@@ -174,9 +176,12 @@ plotRNA.FUN <- function(mydata, geneName=NULL, ensemblID=NULL, biopsies = c("S16
 
 #load ATAC count matrix and genomic coordinates
 
-ATAC_countsmatrix_cleaned <- read.csv("./Data/ATAC_countsmatrix_cleaned_230616.csv", row.names=1)
+#ATAC_countsmatrix_cleaned <- read.csv("./Data/ATAC_countsmatrix_cleaned_230616.csv", row.names=1)
 
-Alex_ATAC_peaks_hg19_201110 <- read.delim("./Data/Alex_ATAC_peaks_hg19_201110.bed", header=FALSE)
+#Alex_ATAC_peaks_hg19_201110 <- read.delim("./Data/Alex_ATAC_peaks_hg19_201110.bed", header=FALSE)
+
+Alex_ATAC_peaks_hg19_201110 <- read.delim("./Data/ATAC_peaks.bed", header=FALSE)
+
 
 AllPeaks.granges <- GRanges(seqnames = Alex_ATAC_peaks_hg19_201110[,1], ranges = IRanges(start=Alex_ATAC_peaks_hg19_201110[,2], end=Alex_ATAC_peaks_hg19_201110[,3]), mcols = data.frame(PeakID = Alex_ATAC_peaks_hg19_201110[,4]))
 
@@ -186,7 +191,9 @@ tpm3 <- function(counts,len) {
   return(t(t(x)*1e6/colSums(x)))
 }
 
-ATAC_TPMmatrix <- as.data.frame(tpm3(ATAC_countsmatrix_cleaned,width(AllPeaks.granges)))
+#ATAC_TPMmatrix <- as.data.frame(tpm3(ATAC_countsmatrix_cleaned,width(AllPeaks.granges)))
+
+ATAC_TPMmatrix <- readRDS("./Data/ATAC_timecourse_TPM.rds")
 
 # function for extracting genomic coordinates from text input and generating genomic ranges object
 
