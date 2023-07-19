@@ -7,7 +7,9 @@ library(GenomicRanges)
 
 # load data
 
-AH_EL_RNA_ALLREPS <- read.csv("./Data/AH_EL_RNA_ALLREPS.csv")
+#AH_EL_RNA_ALLREPS <- read.csv("./Data/AH_EL_RNA_ALLREPS.csv")
+
+AH_EL_RNA_ALLREPS <- readRDS("./Data/RNA_timecourse_TPM.rds")
 
 Gene_key_hg19 <- read.delim("./Data/Gene_key_hg19.txt")
 
@@ -37,7 +39,7 @@ arrange.FUN <- function(mydata, geneName=NULL, ensemblID=NULL){
 
   mydata.subset <- subset.RNA.FUN(mydata=mydata, geneName = geneName, ensemblID=ensemblID)
 
-  mydata.subset <-  pivot_longer(mydata.subset, cols = colnames(mydata)[2:40])
+  mydata.subset <-  pivot_longer(mydata.subset, cols = colnames(mydata)[2:41])
 
   mydata.subset <- cbind(mydata.subset,str_split(mydata.subset$name,pattern="_", simplify = T))
   colnames(mydata.subset)[3:6] <- c("Sample","TPM","Biopsy","Hours")
