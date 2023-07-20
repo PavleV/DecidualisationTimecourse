@@ -10,7 +10,7 @@ library(GenomicRanges)
 AH_EL_RNA_ALLREPS <- readRDS("./Data/RNA_timecourse_TPM.rds")
 
 Gene_key_hg38 <- read.delim("./Data/GRCh38_key_230713.txt")
-Gene_key_hg38 <- subset(Gene_key_hg38, !is.na(GeneName))
+Gene_key_hg38 <- subset(Gene_key_hg38, GeneName != "")
 
 geneKey.ranges <- GRanges(seq=Gene_key_hg38$Chromosome,IRanges(start=Gene_key_hg38$Start, end=Gene_key_hg38$End), strand=Gene_key_hg38$Strand,mcols=Gene_key_hg38[,c("EnsemblID","GeneName")])
 
