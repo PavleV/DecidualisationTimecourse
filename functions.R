@@ -7,15 +7,12 @@ library(GenomicRanges)
 
 # load data
 
-#AH_EL_RNA_ALLREPS <- read.csv("./Data/AH_EL_RNA_ALLREPS.csv")
-
 AH_EL_RNA_ALLREPS <- readRDS("./Data/RNA_timecourse_TPM.rds")
 
-Gene_key_hg19 <- read.delim("./Data/Gene_key_hg19.txt")
-
 Gene_key_hg38 <- read.delim("./Data/GRCh38_key_230713.txt")
+Gene_key_hg38 <- subset(Gene_key_hg38, !is.na(GeneName))
 
-geneKey.ranges <- GRanges(seq=Gene_key_hg19$Chromosome,IRanges(start=Gene_key_hg19$Start, end=Gene_key_hg19$End), strand=Gene_key_hg19$Strand,mcols=Gene_key_hg19[,c("EnsemblID","GeneName")])
+geneKey.ranges <- GRanges(seq=Gene_key_hg38$Chromosome,IRanges(start=Gene_key_hg38$Start, end=Gene_key_hg38$End), strand=Gene_key_hg38$Strand,mcols=Gene_key_hg38[,c("EnsemblID","GeneName")])
 
 
 # Functions
@@ -176,22 +173,9 @@ plotRNA.FUN <- function(mydata, geneName=NULL, ensemblID=NULL, biopsies = c("S16
 
 #load ATAC count matrix and genomic coordinates
 
-#ATAC_countsmatrix_cleaned <- read.csv("./Data/ATAC_countsmatrix_cleaned_230616.csv", row.names=1)
+ATAC_peaks <- read.delim("./Data/ATAC_peaks.bed", header=FALSE)
 
-#Alex_ATAC_peaks_hg19_201110 <- read.delim("./Data/Alex_ATAC_peaks_hg19_201110.bed", header=FALSE)
-
-Alex_ATAC_peaks_hg19_201110 <- read.delim("./Data/ATAC_peaks.bed", header=FALSE)
-
-
-AllPeaks.granges <- GRanges(seqnames = Alex_ATAC_peaks_hg19_201110[,1], ranges = IRanges(start=Alex_ATAC_peaks_hg19_201110[,2], end=Alex_ATAC_peaks_hg19_201110[,3]), mcols = data.frame(PeakID = Alex_ATAC_peaks_hg19_201110[,4]))
-
-
-tpm3 <- function(counts,len) {
-  x <- counts/len
-  return(t(t(x)*1e6/colSums(x)))
-}
-
-#ATAC_TPMmatrix <- as.data.frame(tpm3(ATAC_countsmatrix_cleaned,width(AllPeaks.granges)))
+AllPeaks.granges <- GRanges(seqnames = ATAC_peaks[,1], ranges = IRanges(start=ATAC_peaks[,2], end=ATAC_peaks[,3]), mcols = data.frame(PeakID = ATAC_peaks[,4]))
 
 ATAC_TPMmatrix <- readRDS("./Data/ATAC_timecourse_TPM.rds")
 

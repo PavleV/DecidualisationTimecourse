@@ -51,7 +51,7 @@ ui <- fluidPage(
 
             conditionalPanel(
                 condition = "input.link != 'bygene'",
-                textInput("genome_coord", label = h4("Genomic region (hg19)"), value = "chr8:27696656-27881112", placeholder="Enter chromosomal location...")
+                textInput("genome_coord", label = h4("Genomic region (hg19)"), value = "chr8:27869883-27992673", placeholder="Enter chromosomal location...")
 
             )
 
